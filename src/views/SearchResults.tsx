@@ -18,10 +18,10 @@ const SearchResults = () => {
     }, [query]);
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl mb-6">Résultats pour : <strong>{query}</strong></h2>
+        <div>
+            <h2>Résultats pour : <strong>{query}</strong></h2>
             {/* Grid Responsive : 1 col mobile, 3 tablet, 4 desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div>
                 {books.map(book => (
                     <BookCard key={book.key} book={book} />
                 ))}
