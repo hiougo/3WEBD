@@ -1,9 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Change la couleur de sélection du texte (le surlignage bleu par défaut) en rose */
-::selection {
-  background-color: #ec4899; /* Notre couleur secondaire */
-  color: white;
-}
