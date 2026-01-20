@@ -13,11 +13,14 @@ const Home = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <div>Chargement des nouveautés...</div>;
+    if (loading) return <div>loading...</div>;
 
     return (
         <div>
-            <h1 >Derniers changements à la bibliothèque</h1>
+            <h1 className="font-display font-bold text-4xl md:text-5xl uppercase italic tracking-tighter mb-8 flex items-center gap-3 dark:text-white">
+                <span className="block w-3 h-10 bg-neon skew-x-[-12deg]"></span>
+                Last 10 Recent Changes
+            </h1>
             <div >
                 {changes.slice(0, 10).map((change) => (
                     <div key={change.id} >

@@ -6,12 +6,12 @@ interface Props {
 }
 
 const BookCard = ({ book }: Props) => {
-    // Extraction de l'ID (J'ai simplifié la logique pour être sûr que ça marche en standard JS)
+
     const bookId = book.key.replace('/works/', '');
 
     return (
         <Link to={`/book/${bookId}`}>
-            {/* Image de couverture */}
+
             <div>
                 <img
                     src={book.cover_i
