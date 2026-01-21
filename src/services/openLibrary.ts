@@ -22,7 +22,7 @@ export const openLibraryService = {
     },
 
     getRecentChanges: async (): Promise<any[]> => {
-        const response = await fetch('https://openlibrary.org/recentchanges.json?limit=10');
+        const response = await fetch('https://openlibrary.org/recentchanges.json?limit=50');
         if (!response.ok) throw new Error('Failed to fetch changes');
         return response.json();
     }
