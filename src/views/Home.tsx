@@ -1,72 +1,73 @@
 import { useEffect, useState } from 'react';
 import { openLibraryService } from '../services/openLibrary';
-import type { RecentChange } from '../types/RecentChange';
-import type { BookSummary } from '../types/Book'; // On importe le type attendu par la carte
-import BookCard from '../components/BookCard'; // On importe le composant
+import type { BookSummary } from '../types/Book';
+import BookCard from '../components/BookCard';
 
 const Home = () => {
-    // On utilise BookSummary[] au lieu de BookDisplay[]
     const [books, setBooks] = useState<BookSummary[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchAndEnrichBooks = async () => {
+        const fetchRecentBooks = async () => {
             try {
-                const changes: RecentChange[] = await openLibraryService.getRecentChanges();
+                const changes = await openLibraryService.getRecentChanges();
 
-                // Filtrage identique
-                const bookChanges = changes.filter(change =>
-                    change.kind !== 'new-account' &&
-                    change.kind !== 'delete-account' &&
-                    change.changes[0]?.key &&
-                    (change.changes[0].key.includes('/books/') || change.changes[0].key.includes('/works/'))
-                );
+                // 1. Filtrer pour ne garder que les changements qui contiennent un livre (/books/) ou une oeuvre (/works/)
+                const bookChanges = changes.filter((change: any) =>
+                    change.changes.some((c: any) => c.key.includes('/books/') || c.key.includes('/works/'))
+                ).slice(0, 10);
 
-                const top10 = bookChanges.slice(0, 10);
+                // 2. Pour chaque changement, on récupère les détails
+                const bookPromises = bookChanges.map(async (change: any) => {
+                    // On trouve la clé du livre spécifiquement (au cas où il y a un auteur dans le même changement)
+                    const bookEntry = change.changes.find((c: any) =>
+                        c.key.includes('/books/') || c.key.includes('/works/')
+                    );
 
-                const detailedBooksPromises = top10.map(async (change) => {
-                    const bookKey = change.changes[0].key;
+                    const rawKey = bookEntry.key; // ex: "/books/OL45306019M"
+                    const cleanId = rawKey.split('/').pop(); // ex: "OL45306019M"
+
                     try {
-                        const details = await openLibraryService.getBookDetails(bookKey);
+                        // On appelle l'API avec la clé complète (nécessaire pour le service)
+                        const detail = await openLibraryService.getBookDetails(rawKey);
+                        console.log(detail);
 
-                        const coverId = details.covers && details.covers.length > 0 ? details.covers[0] : undefined;
-
-                        const bookSummary: BookSummary = {
-                            key: bookKey,
-                            title: details.title || "UNTITLED DATA",
-                            cover_i: coverId,
-                            author_name: details.authors ? ['Unknown Author'] : ['System Update'],
-                            first_publish_year: new Date(change.timestamp).getFullYear()
-                        };
-
-                        return bookSummary;
+                        return {
+                            key: cleanId, // On passe l'ID propre pour l'URL du BookCard
+                            title: detail.title || `ID: ${cleanId}`,
+                            author_name: detail.author_name || (detail.authors ? [detail.authors[0].name] : ['Unknown']),
+                            // Normalisation de la couverture (cover_i ou premier élément de covers)
+                            cover_i: detail.cover_i || (detail.covers && detail.covers.length > 0 ? detail.covers[0] : null),
+                            first_publish_year: detail.first_publish_year || (detail.publish_date ? parseInt(detail.publish_date) : null)
+                        } as BookSummary;
                     } catch (err) {
-                        return null;
+                        // Backup en cas d'échec de l'appel de détails
+                        return {
+
+                        }
                     }
                 });
 
-                const results = await Promise.all(detailedBooksPromises);
-                setBooks(results.filter((b): b is BookSummary => b !== null));
-
+                const results = await Promise.all(bookPromises);
+                setBooks(results);
             } catch (error) {
-                console.error("Error :", error);
+                console.error("Data Stream Interrupted:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchAndEnrichBooks();
+        fetchRecentBooks();
     }, []);
 
-    // Loader style Terminal
     if (loading) return (
         <div className="p-20 text-center font-mono text-xl animate-pulse uppercase tracking-widest dark:text-neon">
-             Initializing Data Stream...
+            Initializing Data Stream...
         </div>
     );
 
     return (
-        <div>
+        <div className="max-w-7xl mx-auto p-4">
             {/* Titre Brutaliste */}
             <h1 className="font-display font-bold text-4xl md:text-5xl uppercase italic tracking-tighter mb-12 flex items-center gap-3 dark:text-white">
                 <span className="block w-4 h-12 bg-neon skew-x-[-12deg] border-2 border-black dark:border-none"></span>
@@ -76,7 +77,6 @@ const Home = () => {
             {/* Grille utilisant BookCard */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                 {books.map((book) => (
-                    // On passe simplement l'objet book au composant
                     <BookCard key={book.key} book={book} />
                 ))}
             </div>

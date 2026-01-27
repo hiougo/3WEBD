@@ -115,7 +115,7 @@ const Layout = () => {
                         <p className="font-bold text-xl mb-4 border-b-2 border-neon inline-block uppercase">link</p>
                         <ul className="space-y-2 font-mono text-gray-300">
                             <li><a href="https://github.com/hiougo/3WEBD" className="hover:text-neon hover:underline decoration-2">GITHUB</a></li>
-                            <li><a href="https://openlibrary.org/" className="hover:text-neon hover:underline decoration-2">API</a></li>
+                            <li><a href="api/" className="hover:text-neon hover:underline decoration-2">API</a></li>
                         </ul>
                     </div>
                 </div>
