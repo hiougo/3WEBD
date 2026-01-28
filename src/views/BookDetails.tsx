@@ -2,17 +2,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { openLibraryService } from '../services/openLibrary';
 import type { BookDetail } from '../types/Book';
-import { ArrowLeft, Database } from 'lucide-react';
+import {ArrowLeft, Database, ExternalLink} from 'lucide-react';
+import type { WikiData } from '../types/Wikipedia';
+import {wikipediaService} from "../services/wikipedia.ts";
+import placeholderImg from '../assets/placeholder.jpg';
 
 const BookDetails = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [book, setBook] = useState<BookDetail | null>(null);
     const [error, setError] = useState(false);
-
-    // BookDetails.tsx
-
-    // BookDetails.tsx
+    const [wikiBonus, setWikiBonus] = useState<WikiData | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -22,6 +22,16 @@ const BookDetails = () => {
             openLibraryService.getBookDetails(queryId)
                 .then(async (bookData) => {
                     let finalAuthorName = ['UNKNOWN AGENT'];
+                    const rawLinks = (bookData as any).links || [];
+                    const extractedWikiUrl = rawLinks.find((link: any) =>
+                        link.url && link.url.includes('wikipedia.org')
+                    )?.url;
+
+                    if (extractedWikiUrl) {
+                        const wikiContent = await wikipediaService.getFromUrl(extractedWikiUrl);
+                        setWikiBonus(wikiContent);
+                    }
+
 
                     // 1. Tenter de trouver la clé de l'auteur dans les données brutes
                     if (bookData.authors && bookData.authors.length > 0) {
@@ -48,7 +58,8 @@ const BookDetails = () => {
                     // 3. On construit l'objet final avec le VRAI nom
                     const normalizedBook: BookDetail = {
                         ...bookData,
-                        author_name: finalAuthorName
+                        author_name: finalAuthorName,
+                        wiki_url: extractedWikiUrl
                     };
 
                     setBook(normalizedBook);
@@ -77,7 +88,18 @@ const BookDetails = () => {
     );
 
     // Détermination de l'image (cover_i ou premier élément du tableau covers)
-    const displayCoverId = book.cover_i || (book.covers && book.covers.length > 0 ? book.covers[0] : null);
+    console.log(book.wiki_url);
+    const olCoverId = book.cover_i || (book.covers && book.covers.length > 0 ? book.covers[0] : null);
+
+    const finalCoverUrl = wikiBonus?.thumbnail?.source
+        ? wikiBonus.thumbnail.source
+        : (olCoverId
+            ? `https://covers.openlibrary.org/b/id/${olCoverId}-L.jpg`
+            : placeholderImg);
+
+    const finalDescription = wikiBonus?.extract ||
+        (typeof book.description === 'string' ? book.description : book.description?.value) ||
+        "No detailed description available in the digital archives.";
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto p-4">
@@ -99,11 +121,12 @@ const BookDetails = () => {
                         </div>
 
                         <img
-                            src={displayCoverId
-                                ? `https://covers.openlibrary.org/b/id/${displayCoverId}-L.jpg`
-                                : 'https://via.placeholder.com/400x600?text=NO+VISUAL+DATA'}
+                            src={finalCoverUrl}
                             alt={book.title}
-                            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-500 border border-gray-200 dark:border-gray-800"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = placeholderImg;
+                            }}
+                            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-500 border border-gray-200 dark:border-gray-800 aspect-[2/3]"
                         />
                     </div>
 
@@ -147,11 +170,21 @@ const BookDetails = () => {
                         </div>
 
                         <div className="mt-2 font-mono leading-relaxed text-sm md:text-base text-justify dark:text-gray-300">
-                            <p>
-                                {typeof book.description === 'string'
-                                    ? book.description
-                                    : book.description?.value || "No detailed description available in the digital archives."}
-                            </p>
+                            <p>{finalDescription}</p>
+
+                            {/* LIEN WIKIPEDIA SI DISPONIBLE */}
+                            {wikiBonus && wikiBonus.content_urls && (
+                                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                                    <a
+                                        href={wikiBonus.content_urls.desktop.page}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 text-xs font-bold uppercase hover:bg-neon hover:text-black transition-colors"
+                                    >
+                                        Read Full Report <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

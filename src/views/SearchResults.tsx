@@ -2,41 +2,89 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { openLibraryService } from '../services/openLibrary';
 import type { BookSummary } from '../types/Book';
+import type { SearchCriteria } from '../types/Search'; // Assure-toi d'avoir ce fichier
 import BookCard from '../components/BookCard';
 
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
     const [books, setBooks] = useState<BookSummary[]>([]);
-    const [loading, setLoading] = useState(false); // Ajout d'un state loading
-    const query = searchParams.get('q') || '';
+    const [loading, setLoading] = useState(false);
+
+    // 1. On récupère TOUS les paramètres possibles
+    const q = searchParams.get('q');
+    const title = searchParams.get('title');
+    const author = searchParams.get('author');
+    const subject = searchParams.get('subject');
+
+    // Petit helper pour afficher joliment ce qu'on cherche dans le header
+    const getSearchLabel = () => {
+        const parts = [];
+        if (q) parts.push(`"${q}"`);
+        if (title) parts.push(`Title: ${title}`);
+        if (author) parts.push(`Author: ${author}`);
+        if (subject) parts.push(`Subject: ${subject}`);
+        return parts.length > 0 ? parts.join(' + ') : 'ALL ARCHIVES';
+    };
 
     useEffect(() => {
-        if (query) {
+        // On construit l'objet de critères
+        const criteria: SearchCriteria = {
+            q: q || undefined,
+            title: title || undefined,
+            author: author || undefined,
+            subject: subject || undefined
+        };
+
+        // Si l'URL est vide (pas de critères), on évite de charger pour rien
+        if (Object.values(criteria).every(val => val === undefined)) return;
+
+        const fetchData = async () => {
             setLoading(true);
-            openLibraryService.searchBooks(query)
-                .then(res => setBooks(res.docs))
-                .catch(err => console.error("Erreur recherche:", err))
-                .finally(() => setLoading(false));
-        }
-    }, [query]);
+            try {
+                // 2. Appel au service avec l'objet criteria
+                const response = await openLibraryService.searchBooks(criteria);
+
+                // 3. MAPPING : On transforme la réponse brute de l'API en BookSummary propre
+                // C'est nécessaire car searchBooks renvoie maintenant response.json() brut
+                const formattedBooks: BookSummary[] = response.docs.map((doc: any) => ({
+                    key: doc.key.replace('/works/', ''), // On nettoie l'ID
+                    title: doc.title,
+                    author_name: doc.author_name || ['Unknown Agent'],
+                    cover_i: doc.cover_i,
+                    first_publish_year: doc.first_publish_year
+                }));
+
+                setBooks(formattedBooks);
+
+            } catch (err) {
+                console.error("Erreur recherche:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+
+    }, [searchParams]); // Se relance quand l'URL change
 
     return (
         <div>
             {/* Header des résultats style Brutaliste */}
             <div className="mb-12">
-                <h2 className="font-display font-bold text-4xl md:text-6xl uppercase italic tracking-tighter flex flex-col md:flex-row md:items-center gap-3 dark:text-white">
+                <h2 className="font-display font-bold text-3xl md:text-5xl uppercase italic tracking-tighter flex flex-col md:flex-row md:items-center gap-3 dark:text-white">
                     {/* Bloc déco neon */}
                     <span className="hidden md:block w-4 h-12 bg-neon skew-x-[-12deg] border-2 border-black dark:border-none"></span>
 
                     <span>Results for :</span>
 
-                    {/* Le mot recherché surligné */}
-                    <span className="bg-black text-white px-2 py-1 transform -skew-x-6 border-2 border-transparent dark:bg-neon dark:text-black dark:border-none">
-                        "{query}"
+                    {/* Le texte recherché dynamique */}
+                    <span className="bg-black text-white px-3 py-1 transform -skew-x-6 border-2 border-transparent dark:bg-neon dark:text-black dark:border-none text-xl md:text-3xl truncate max-w-full">
+                        {getSearchLabel()}
                     </span>
                 </h2>
-                <p className="font-mono text-sm mt-2 text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                    Found {books.length} matches in database.
+
+                <p className="font-mono text-sm mt-2 text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-0 md:pl-8">
+                    {loading ? 'CALCULATING...' : `Found ${books.length} matches in database.`}
                 </p>
             </div>
 
@@ -44,7 +92,7 @@ const SearchResults = () => {
             {loading ? (
                 <div className="p-20 text-center">
                     <p className="font-mono text-xl animate-pulse uppercase tracking-widest dark:text-neon">
-                         SCANNING LIBRARY ARCHIVES...
+                        SCANNING LIBRARY ARCHIVES...
                     </p>
                 </div>
             ) : (
@@ -58,10 +106,10 @@ const SearchResults = () => {
 
                     {/* Cas vide (0 résultats) */}
                     {!loading && books.length === 0 && (
-                        <div className="border-3 border-black dark:border-white p-12 text-center bg-gray-100 dark:bg-gray-800">
+                        <div className="border-3 border-black dark:border-white p-12 text-center bg-gray-100 dark:bg-gray-800 mt-8">
                             <h3 className="font-display text-3xl font-bold uppercase mb-4 dark:text-white">Void detected.</h3>
                             <p className="font-mono text-gray-600 dark:text-gray-300">
-                                No data found for query "{query}". Try a different frequency.
+                                No data found for query "{getSearchLabel()}". Try adjusting your filters.
                             </p>
                         </div>
                     )}

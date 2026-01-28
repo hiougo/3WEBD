@@ -7,7 +7,6 @@ export interface BookSummary {
     first_publish_date?: number;
     cover_i?: number;
     subject?: string[];
-    authors?: { key: string }[];
 }
 
 // C'est cette ligne qui manque probablement ou qui est mal écrite :
@@ -18,6 +17,12 @@ export interface BookDetail extends BookSummary {
     // Ajoute d'autres champs si nécessaire
     publish_date?: string;
     covers?: number[];
+    authors?: {
+        key: string;            // Le cas standard
+        name?: string;          // Parfois le nom est là
+        author?: { key: string } // Le cas imbriqué (Work vs Edition)
+    }[];
+    wiki_url?: string;
 }
 
 export interface OpenLibrarySearchResponse {
