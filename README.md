@@ -1,73 +1,38 @@
-# React + TypeScript + Vite
+# READ.
+Un explorateur de livres propulsé par Open Library et Wikipédia.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ce projet fusionne les données techniques d'Open Library avec les résumés et images de Wikipédia pour créer une expérience d'archivage exceptionelle.
 
-Currently, two official plugins are available:
+## Fonctionnalités :
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Un mode light/dark mode : Pour une expérience utilisateur à toute épreuve.
 
-## React Compiler
+Recherche : Recherche basique via Open Library.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Recherche Avancée : Filtrage par Titre, Auteur et Sujet.
 
-## Expanding the ESLint configuration
+Données Enrichies : Si un livre a un lien Wikipédia, l'application utilise en priorité les données de Wikipédia puis d'Open Library et enfin un placeholder si jamais aucune donnée n'est disponible.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Stack Technique :
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React + TypeScript (Vite)
+- Tailwind CSS (Style)
+- React Router (Navigation)
+- APIs : Open Library + Wikipedia REST API
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Installer :
+```bash 
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Lancer :
+```bash
+npm run dev
+```
+Ouvrez http://localhost:5173 pour explorer les archives.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tester :
+Assurez-vous que votre serveur dev soit lancé.
+```bash
+npm run cy:run
 ```
