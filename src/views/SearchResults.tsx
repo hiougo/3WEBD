@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { openLibraryService } from '../services/openLibrary';
 import type { BookSummary } from '../types/Book';
-import type { SearchCriteria } from '../types/Search'; // Assure-toi d'avoir ce fichier
+import type { SearchCriteria } from '../types/Search';
 import BookCard from '../components/BookCard';
 
 const SearchResults = () => {
@@ -10,13 +10,11 @@ const SearchResults = () => {
     const [books, setBooks] = useState<BookSummary[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // 1. On récupère TOUS les paramètres possibles
     const q = searchParams.get('q');
     const title = searchParams.get('title');
     const author = searchParams.get('author');
     const subject = searchParams.get('subject');
 
-    // Petit helper pour afficher joliment ce qu'on cherche dans le header
     const getSearchLabel = () => {
         const parts = [];
         if (q) parts.push(`"${q}"`);
@@ -27,7 +25,6 @@ const SearchResults = () => {
     };
 
     useEffect(() => {
-        // On construit l'objet de critères
         const criteria: SearchCriteria = {
             q: q || undefined,
             title: title || undefined,
@@ -35,19 +32,15 @@ const SearchResults = () => {
             subject: subject || undefined
         };
 
-        // Si l'URL est vide (pas de critères), on évite de charger pour rien
         if (Object.values(criteria).every(val => val === undefined)) return;
 
         const fetchData = async () => {
             setLoading(true);
             try {
-                // 2. Appel au service avec l'objet criteria
                 const response = await openLibraryService.searchBooks(criteria);
 
-                // 3. MAPPING : On transforme la réponse brute de l'API en BookSummary propre
-                // C'est nécessaire car searchBooks renvoie maintenant response.json() brut
                 const formattedBooks: BookSummary[] = response.docs.map((doc: any) => ({
-                    key: doc.key.replace('/works/', ''), // On nettoie l'ID
+                    key: doc.key.replace('/works/', ''),
                     title: doc.title,
                     author_name: doc.author_name || ['Unknown Agent'],
                     cover_i: doc.cover_i,
@@ -62,22 +55,15 @@ const SearchResults = () => {
                 setLoading(false);
             }
         };
-
         fetchData();
-
-    }, [searchParams]); // Se relance quand l'URL change
+    }, [searchParams]);
 
     return (
-        <div>
-            {/* Header des résultats style Brutaliste */}
+        <>
             <div className="mb-12">
                 <h2 className="font-display font-bold text-3xl md:text-5xl uppercase italic tracking-tighter flex flex-col md:flex-row md:items-center gap-3 dark:text-white">
-                    {/* Bloc déco neon */}
                     <span className="hidden md:block w-4 h-12 bg-neon skew-x-[-12deg] border-2 border-black dark:border-none"></span>
-
                     <span>Results for :</span>
-
-                    {/* Le texte recherché dynamique */}
                     <span className="bg-black text-white px-3 py-1 transform -skew-x-6 border-2 border-transparent dark:bg-neon dark:text-black dark:border-none text-xl md:text-3xl truncate max-w-full">
                         {getSearchLabel()}
                     </span>
@@ -88,7 +74,6 @@ const SearchResults = () => {
                 </p>
             </div>
 
-            {/* Loader style Terminal */}
             {loading ? (
                 <div className="p-20 text-center">
                     <p className="font-mono text-xl animate-pulse uppercase tracking-widest dark:text-neon">
@@ -97,14 +82,12 @@ const SearchResults = () => {
                 </div>
             ) : (
                 <>
-                    {/* Grid Responsive */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {books.map(book => (
                             <BookCard key={book.key} book={book} />
                         ))}
                     </div>
 
-                    {/* Cas vide (0 résultats) */}
                     {!loading && books.length === 0 && (
                         <div className="border-3 border-black dark:border-white p-12 text-center bg-gray-100 dark:bg-gray-800 mt-8">
                             <h3 className="font-display text-3xl font-bold uppercase mb-4 dark:text-white">Void detected.</h3>
@@ -115,7 +98,7 @@ const SearchResults = () => {
                     )}
                 </>
             )}
-        </div>
+        </>
     );
 };
 

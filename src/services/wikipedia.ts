@@ -2,7 +2,6 @@ import type { WikiData } from '../types/Wikipedia';
 
 export const wikipediaService = {
 
-
     getFromUrl: async (wikiUrl: string): Promise<WikiData | null> => {
         try {
             const match = wikiUrl.match(/https?:\/\/([a-z]{2,3})\.wikipedia\.org\/wiki\/(.*)/);

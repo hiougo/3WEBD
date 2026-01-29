@@ -33,15 +33,12 @@ const BookDetails = () => {
                     }
 
 
-                    // 1. Tenter de trouver la clé de l'auteur dans les données brutes
                     if (bookData.authors && bookData.authors.length > 0) {
                         const authorEntry = bookData.authors[0];
-                        // Gestion de la clé directe ou imbriquée
                         const authorKey = authorEntry.key || (authorEntry.author && authorEntry.author.key);
 
                         if (authorKey) {
                             try {
-                                // 2. SECOND APPEL API : On va chercher le vrai nom de l'auteur
                                 const authorData = await openLibraryService.getAuthor(authorKey);
                                 if (authorData && authorData.name) {
                                     finalAuthorName = [authorData.name];
@@ -51,11 +48,9 @@ const BookDetails = () => {
                             }
                         }
                     } else if (Array.isArray(bookData.author_name)) {
-                        // Cas rare (recherche directe) où le nom est déjà là
                         finalAuthorName = bookData.author_name;
                     }
 
-                    // 3. On construit l'objet final avec le VRAI nom
                     const normalizedBook: BookDetail = {
                         ...bookData,
                         author_name: finalAuthorName,
@@ -87,10 +82,7 @@ const BookDetails = () => {
         </div>
     );
 
-    // Détermination de l'image (cover_i ou premier élément du tableau covers)
-    console.log(book.wiki_url);
     const olCoverId = book.cover_i || (book.covers && book.covers.length > 0 ? book.covers[0] : null);
-
     const finalCoverUrl = wikiBonus?.thumbnail?.source
         ? wikiBonus.thumbnail.source
         : (olCoverId
@@ -103,7 +95,6 @@ const BookDetails = () => {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto p-4">
-            {/* BOUTON RETOUR */}
             <button
                 onClick={() => navigate(-1)}
                 className="mb-8 flex items-center gap-2 font-mono text-sm font-bold uppercase hover:bg-black hover:text-white px-4 py-2 border-3 border-black dark:border-neon dark:text-white dark:hover:bg-neon dark:hover:text-black transition-colors w-fit"
@@ -113,7 +104,6 @@ const BookDetails = () => {
             </button>
 
             <div className="flex flex-col lg:flex-row gap-12">
-                {/* COLONNE GAUCHE : IMAGE "EVIDENCE" */}
                 <div className="w-full lg:w-1/3 flex-shrink-0">
                     <div className="border-3 border-black dark:border-white p-4 bg-white dark:bg-gray-900 shadow-brutal dark:shadow-[4px_4px_0px_0px_#ffffff] relative">
                         <div className="absolute -top-3 -right-3 bg-neon text-black font-mono text-xs font-bold px-2 py-1 border-2 border-black transform rotate-3">
@@ -130,7 +120,6 @@ const BookDetails = () => {
                         />
                     </div>
 
-                    {/* Meta Data Rapide */}
                     <div className="mt-6 font-mono text-sm space-y-2 text-gray-600 dark:text-gray-400">
                         <div className="flex justify-between border-b border-gray-300 dark:border-gray-700 py-1">
                             <span>FIRST PUBLISH DATE:</span>
@@ -151,7 +140,6 @@ const BookDetails = () => {
                     </div>
                 </div>
 
-                {/* COLONNE DROITE : CONTENU DU DOSSIER */}
                 <div className="flex-1">
                     <h1 className="font-display text-5xl md:text-7xl uppercase italic font-bold leading-[0.9] mb-6 dark:text-white">
                         {book.title}
@@ -172,7 +160,6 @@ const BookDetails = () => {
                         <div className="mt-2 font-mono leading-relaxed text-sm md:text-base text-justify dark:text-gray-300">
                             <p>{finalDescription}</p>
 
-                            {/* LIEN WIKIPEDIA SI DISPONIBLE */}
                             {wikiBonus && wikiBonus.content_urls && (
                                 <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
                                     <a

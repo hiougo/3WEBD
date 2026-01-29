@@ -9,13 +9,8 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* Route parente qui contient le Header/Footer */}
                 <Route path="/" element={<Layout />}>
-
-                    {/* ✅ La page par défaut (Accueil) */}
                     <Route index element={<Home />} />
-
-                    {/* Les autres pages */}
                     <Route path="search" element={<SearchResults />} />
                     <Route path="book/:id" element={<BookDetails />} />
 

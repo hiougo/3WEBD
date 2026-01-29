@@ -6,10 +6,7 @@ interface Props {
 }
 
 const BookCard = ({ book }: Props) => {
-
     const bookId = book.key.replace('/works/', '');
-
-
     const coverUrl = book.cover_i
         ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
         : null;
@@ -48,7 +45,7 @@ const BookCard = ({ book }: Props) => {
 
                 <div className="w-full text-right">
                     <span className="text-[10px] font-mono font-bold uppercase bg-black text-white px-2 py-1 dark:bg-white dark:text-black">
-                        {book.first_publish_year || 'N/A'}
+                        {book.first_publish_date || 'N/A'}
                     </span>
                 </div>
             </div>

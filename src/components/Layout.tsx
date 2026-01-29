@@ -6,6 +6,7 @@ const Layout = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
     const navigate = useNavigate();
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -66,16 +67,16 @@ const Layout = () => {
                     {/* BUTTONS GROUPS */}
                     <div className="flex items-center gap-4">
                         {/* Correction : Ce lien avait perdu son style de bouton. Je l'ai remis. */}
-                        <Link
-                            to="/search"
+                        <button
+                            onClick={() => setShowAdvanced(!showAdvanced)} // 2. Basculer l'état
                             className="whitespace-nowrap px-6 py-2 bg-neon border-3 border-black font-bold text-black uppercase
-                                     hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black
-                                     shadow-brutal dark:shadow-none transition-all
-                                     hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-hover
-                                     dark:border-neon"
+                               hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black
+                               shadow-brutal dark:shadow-none transition-all
+                               hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-hover
+                               dark:border-neon"
                         >
-                            Advanced search
-                        </Link>
+                            {showAdvanced ? 'Close Search' : 'Advanced Search'}
+                        </button>
 
                         <button
                             onClick={() => setIsDark(!isDark)}
@@ -96,7 +97,7 @@ const Layout = () => {
                     <span className="font-display font-bold text-2xl uppercase text-black">Don't read. Devour.</span>
                 </div>
 
-                <Outlet />
+                <Outlet context={{ showAdvanced }} />
             </main>
 
             {/* --- FOOTER --- */}

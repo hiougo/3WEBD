@@ -6,8 +6,6 @@ const BASE_URL = '/api';
 export const openLibraryService = {
     searchBooks: async (criteria: SearchCriteria): Promise<OpenLibrarySearchResponse> => {
         const searchParams = new URLSearchParams();
-
-        // On remplit les paramètres seulement s'ils existent
         if (criteria.q) searchParams.append('q', criteria.q);
         if (criteria.title) searchParams.append('title', criteria.title);
         if (criteria.author) searchParams.append('author', criteria.author);
@@ -37,6 +35,4 @@ export const openLibraryService = {
         if (!response.ok) throw new Error('Auteur introuvable');
         return response.json();
     }
-
-
 };

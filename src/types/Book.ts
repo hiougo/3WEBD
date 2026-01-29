@@ -1,5 +1,3 @@
-// src/types/Book.ts
-
 export interface BookSummary {
     key: string;
     title: string;
@@ -9,23 +7,15 @@ export interface BookSummary {
     subject?: string[];
 }
 
-// C'est cette ligne qui manque probablement ou qui est mal écrite :
 export interface BookDetail extends BookSummary {
     description?: string | { value: string };
     subjects?: string[];
-    number_of_pages?: number;
-    // Ajoute d'autres champs si nécessaire
     publish_date?: string;
     covers?: number[];
     authors?: {
-        key: string;            // Le cas standard
-        name?: string;          // Parfois le nom est là
-        author?: { key: string } // Le cas imbriqué (Work vs Edition)
+        key: string;
+        name?: string;
+        author?: { key: string }
     }[];
     wiki_url?: string;
-}
-
-export interface OpenLibrarySearchResponse {
-    numFound: number;
-    docs: BookSummary[];
 }
