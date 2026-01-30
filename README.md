@@ -37,3 +37,4 @@ Assurez-vous que votre serveur dev soit lancé.
 ```bash
 npm run cy:run
 ```
+Les fichiers de test sont disponibles dans le dossier **/cypress/e2e**
