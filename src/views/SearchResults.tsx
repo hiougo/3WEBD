@@ -4,11 +4,14 @@ import { openLibraryService } from '../services/openLibrary';
 import type { BookSummary } from '../types/Book';
 import type { SearchCriteria } from '../types/Search';
 import BookCard from '../components/BookCard';
+import AdvancedSearchSection from '../components/AdvancedSearchSection'
+
 
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
     const [books, setBooks] = useState<BookSummary[]>([]);
     const [loading, setLoading] = useState(false);
+
 
     const q = searchParams.get('q');
     const title = searchParams.get('title');
@@ -61,6 +64,7 @@ const SearchResults = () => {
     return (
         <>
             <div className="mb-12">
+                <AdvancedSearchSection />
                 <h2 className="font-display font-bold text-3xl md:text-5xl uppercase italic tracking-tighter flex flex-col md:flex-row md:items-center gap-3 dark:text-white">
                     <span className="hidden md:block w-4 h-12 bg-neon skew-x-[-12deg] border-2 border-black dark:border-none"></span>
                     <span>Results for :</span>

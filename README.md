@@ -21,6 +21,7 @@ Données Enrichies : Si un livre a un lien Wikipédia, l'application utilise en 
 - APIs : Open Library + Wikipedia REST API
 
 ## Installer :
+Cette opération peut prendre quelques minutes à cause de l'installation de cypress qui est assez lourde.
 ```bash 
 npm install
 ```

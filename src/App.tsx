@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Home from './views/Home';
 import SearchResults from './views/SearchResults';
 import BookDetails from './views/BookDetails';
+import NotFound from './views/NotFound';
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                     <Route index element={<Home />} />
                     <Route path="search" element={<SearchResults />} />
                     <Route path="book/:id" element={<BookDetails />} />
+                    <Route path="*" element={<NotFound />} />
 
                 </Route>
             </Routes>
