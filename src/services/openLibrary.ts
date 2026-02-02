@@ -1,10 +1,10 @@
-import type { OpenLibrarySearchResponse, BookDetail } from '../types/Book';
+import type { BookDetail } from '../types/Book';
 import type { SearchCriteria } from '../types/Search';
 
 const BASE_URL = '/api';
 
 export const openLibraryService = {
-    searchBooks: async (criteria: SearchCriteria): Promise<OpenLibrarySearchResponse> => {
+    searchBooks: async (criteria: SearchCriteria) => {
         const searchParams = new URLSearchParams();
         if (criteria.q) searchParams.append('q', criteria.q);
         if (criteria.title) searchParams.append('title', criteria.title);

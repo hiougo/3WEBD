@@ -30,12 +30,9 @@ const Layout = () => {
     return (
         <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono selection:bg-black selection:text-neon">
 
-            {/* --- HEADER --- */}
-            {/* Ajout de dark:border-neon pour que la ligne du bas se voit dans le noir */}
             <header className="sticky top-0 z-50 bg-white dark:bg-black border-b-3 border-black dark:border-neon transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
 
-                    {/* LOGO */}
                     <Link to="/" className="group flex flex-col items-start gap-0">
                         <span className="font-display font-bold text-5xl tracking-tighter uppercase italic leading-none group-hover:text-neon transition-colors duration-200 dark:text-white">
                             Read<span className="text-neon">.</span>
@@ -45,30 +42,25 @@ const Layout = () => {
                         </span>
                     </Link>
 
-                    {/* SEARCH BAR */}
                     <form onSubmit={handleSearch} className="relative w-full md:w-1/2 flex shadow-brutal dark:shadow-none transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-hover">
                         <input
                             type="text"
                             placeholder="RESEARCH..."
-                            // Correction : Ajout de dark:bg-black dark:border-neon dark:text-white pour le mode sombre
                             className="w-full py-3 px-4 bg-white text-black font-bold border-3 border-black dark:bg-black dark:border-neon dark:text-white placeholder-gray-500 outline-none uppercase focus:bg-neon focus:text-black transition-colors"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button
                             type="submit"
-                            // Correction : Le bouton devient Néon en dark mode pour être visible
                             className="bg-black text-white dark:bg-neon dark:text-black px-6 border-3 border-black dark:border-neon border-l-0 transition-colors flex items-center justify-center hover:bg-neon hover:text-black"
                         >
                             <Search className="w-6 h-6 stroke-[3]" />
                         </button>
                     </form>
 
-                    {/* BUTTONS GROUPS */}
                     <div className="flex items-center gap-4">
-                        {/* Correction : Ce lien avait perdu son style de bouton. Je l'ai remis. */}
                         <button
-                            onClick={() => setShowAdvanced(!showAdvanced)} // 2. Basculer l'état
+                            onClick={() => setShowAdvanced(!showAdvanced)}
                             className="whitespace-nowrap px-6 py-2 bg-neon border-3 border-black font-bold text-black uppercase
                                hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black
                                shadow-brutal dark:shadow-none transition-all
@@ -88,19 +80,14 @@ const Layout = () => {
                 </div>
             </header>
 
-            {/* --- MAIN CONTENT --- */}
             <main className="max-w-7xl mx-auto w-full p-6 md:p-12">
-                {/* Banner Promo */}
-                {/* Correction : dark:border-white pour que le cadre noir ne disparaisse pas sur le fond noir */}
                 <div className="mb-12 bg-neon border-3 border-black dark:border-white p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#ffffff] flex justify-between items-center transform rotate-1">
-                    {/* text-black forcé ici car le fond est toujours neon */}
                     <span className="font-display font-bold text-2xl uppercase text-black">Don't read. Devour.</span>
                 </div>
 
                 <Outlet context={{ showAdvanced }} />
             </main>
 
-            {/* --- FOOTER --- */}
             <footer className="border-t-3 border-black dark:border-neon bg-black text-white py-12 px-6">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
                     <div>
